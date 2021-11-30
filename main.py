@@ -11,24 +11,28 @@ def main():
     problem = Problem.create_quarter_circle_problem()
     bezier = Bezier(problem)
     curve1 = bezier.get_curve()
-    curvature = Curvature(curve1, 4)
+    curvature = Curvature(curve1, 100)
+    curve1_len = curvature.curve_len()
+    print(curve1_len)
     cur_curvature = curvature.cul_curvature()
-    # print(cur_curvature)
+
     cur_split = curvature.split_cur()
     arc_list = curvature.get_arc()
+    multarcpath1 = problem.start
     for i in range(len(arc_list)):
-        print(arc_list[i].to_string())
-
+        multarcpath1 = compute_arc_end_cfg(multarcpath1, arc_list[i])
+        # print(multarcpath1.to_string())
+    # for i in arc_list:
+    #     # print(i.to_string())
 
 
     '''
     plot
     '''
-    multarcpath1 = problem.start
     plt.subplots(1)
+    start1 = problem.start
     for i in range(len(arc_list)):
-        multarcpath1, x_plot, y_plot = compute_arc_end_cfg(multarcpath1, arc_list[i])
-        print(multarcpath1.to_string())
+        start1, x_plot, y_plot = compute_arc_plot(start1, arc_list[i])
         plt.plot(x_plot, y_plot, "-r")
         # plt.plot(multarcpath1.x, multarcpath1.y, "xb")
     plt.grid(True)

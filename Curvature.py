@@ -37,7 +37,7 @@ class Curvature:
 
     def split_cur(self):
         curve_len = self.curve_len()
-        split = np.linspace(0, curve_len, num=100)
+        split = np.linspace(0, curve_len, num=101)
         return split
 
     def arc_len(self):

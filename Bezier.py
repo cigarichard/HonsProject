@@ -40,8 +40,9 @@ class Bezier:
         return points
 
     def get_curve(self):
+        k = 0.01
         points = self.add_control_point()
-        tlist = np.arange(0, 1, 0.01)
+        tlist = np.arange(0, 1+k, 0.01)
         curve_point = self.get_point(tlist[0], points)
         for t in tlist[1:]:
             curve_point += self.get_point(t, points)
