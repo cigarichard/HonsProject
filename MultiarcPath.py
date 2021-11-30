@@ -13,7 +13,7 @@ def compute_arc_end_cfg(arc_start_cfg: Configuration, arc: Arc) -> Configuration
     x = arc_start_cfg.x
     y = arc_start_cfg.y
     for i in range(10):
-        h = arc_start_cfg.h + prop[i] * arc.phi
+        h = arc_start_cfg.h + 0.85*prop[i] * arc.phi
 
         if np.cos(h) == 1 or np.sin(h) == 1:
             y += 0
@@ -45,7 +45,7 @@ def compute_arc_plot(arc_start_cfg: Configuration, arc: Arc):
     x_plot = [x]
     y_plot = [y]
     for i in range(10):
-        h = arc_start_cfg.h + prop[i] * arc.phi
+        h = arc_start_cfg.h + 0.85*prop[i] * arc.phi
         if np.cos(h) == 1 or np.sin(h) == 1:
             y += 0
             x += 0
