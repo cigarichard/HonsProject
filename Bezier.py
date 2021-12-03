@@ -21,6 +21,7 @@ class Bezier:
         return list_arc
 
     def add_control_point(self):
+        # calculate the direction control points needed for bezier curve
         start_x = self.problem.start.x
         start_y = self.problem.start.y
         start_h = self.problem.start.h
@@ -41,6 +42,7 @@ class Bezier:
         return points
 
     def get_curve(self):
+        # generate the points of bezier curve
         k = 0.01
         points = self.add_control_point()
         tlist = np.arange(0, 1+k, 0.01)

@@ -59,32 +59,32 @@ def compute_arc_end_cfg(arc_start_cfg: Configuration, arc: Arc) -> Configuration
         angle_into_0_2pi(arc_start_cfg.h + arc.phi)
     )
 
+
 def angle_into_0_2pi(angle: float) -> float:
     return angle % (2 * np.pi)
 
 
-
-def compute_arc_plot(arc_start_cfg: Configuration, arc: Arc):
-    k = 0.1
-    split_arc = arc.arc_length / 10
-    prop = np.arange(0, 1, k)
-    x = arc_start_cfg.x
-    y = arc_start_cfg.y
-    x_plot = [x]
-    y_plot = [y]
-    for i in range(10):
-        h = arc_start_cfg.h + prop[i] * arc.phi
-        if np.cos(h) == 1 or np.sin(h) == 1:
-            y += 0
-            x += 0
-            x_plot.append(x)
-            y_plot.append(y)
-        else:
-            x += split_arc * np.cos(h)
-            y += split_arc * np.sin(h)
-            x_plot.append(x)
-            y_plot.append(y)
-    return Configuration(x, y, h), x_plot, y_plot
+# def compute_arc_plot(arc_start_cfg: Configuration, arc: Arc):
+#     k = 0.1
+#     split_arc = arc.arc_length / 10
+#     prop = np.arange(0, 1, k)
+#     x = arc_start_cfg.x
+#     y = arc_start_cfg.y
+#     x_plot = [x]
+#     y_plot = [y]
+#     for i in range(10):
+#         h = arc_start_cfg.h + prop[i] * arc.phi
+#         if np.cos(h) == 1 or np.sin(h) == 1:
+#             y += 0
+#             x += 0
+#             x_plot.append(x)
+#             y_plot.append(y)
+#         else:
+#             x += split_arc * np.cos(h)
+#             y += split_arc * np.sin(h)
+#             x_plot.append(x)
+#             y_plot.append(y)
+#     return Configuration(x, y, h), x_plot, y_plot
 
 
 class MultiarcPath:

@@ -14,11 +14,12 @@ def euclidean_dist(p_1, p_2):
 
 class Curvature:
 
-    def __init__(self, curve_point: List, k: int):
+    def __init__(self, curve_point: List, nums_arc: int):
         self.curve_point = curve_point
-        self.k = k
+        self.k = nums_arc
 
-    def cul_curvature(self):
+    def cal_curvature(self):
+        # calculate the curvature of a curve
         dx_dt = np.gradient(self.curve_point[:, 0])
         dy_dt = np.gradient(self.curve_point[:, 1])
         d2x_dt2 = np.gradient(dx_dt)
@@ -52,7 +53,8 @@ class Curvature:
         return np.array(arc_len)
 
     def get_curvature_mean(self):
-        curvature = self.cul_curvature()
+        # by taking numbers of arc, calculate the curvature of each arc
+        curvature = self.cal_curvature()
         k = self.k
         l = len(curvature) // self.k
         curvature_mean = []
@@ -61,6 +63,7 @@ class Curvature:
         return np.array(curvature_mean)
 
     def get_arc(self) -> List[Arc]:
+        # add all the arc into a list
         k = self.k
         arc_len = self.arc_len()
         curvature = self.get_curvature_mean()
