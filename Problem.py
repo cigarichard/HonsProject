@@ -14,10 +14,11 @@ class Problem:
 
     @classmethod
     def load_from_file(cls, path: str):
+        #reading file in one line format
         f = open(path, "r")
         list1 = [float(i) for i in f.readline().split(',')]
         start = Configuration(list1[0], list1[1], list1[2])
-        goal = Configuration(list1[5], list1[4], list1[5])
+        goal = Configuration(list1[3], list1[4], list1[5])
         f.close()
         return cls(start, goal)
 

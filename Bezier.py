@@ -9,8 +9,9 @@ from Problem import Problem
 
 
 class Bezier:
-    def __init__(self, problem: Problem):
+    def __init__(self, problem: Problem, nums_arc: int):
         self.problem = problem
+        self.nums_arc = int
 
     @staticmethod
     def approx_with_arc(nums_arc: int) -> List[Arc]:
@@ -26,7 +27,7 @@ class Bezier:
         end_x = self.problem.goal.x
         end_y = self.problem.goal.y
         end_h = self.problem.goal.h
-        dist = np.sqrt((start_x - end_x) ** 2 + (start_y - end_y) ** 2)
+        dist = self.problem.start.euclidean_dist(self.problem.goal)
         dir_con = [[start_x, start_y], [start_x + dist * np.cos(start_h), start_y + dist * np.sin(start_h)],
                    [end_x - dist * np.cos(end_h), end_y - dist * np.sin(end_h)], [end_x, end_y]]
         return np.array(dir_con)
