@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 def main():
     problem = Problem.create_quarter_circle_problem()
-    bezier = Bezier(problem, 1)
+    bezier = Bezier(problem, 1, 1)
     curve1 = bezier.get_curve()
     curvature = Curvature(curve1, 100)
     curve1_len = curvature.curve_len()
@@ -26,8 +26,10 @@ def main():
     plot
     '''
     pathView = PathView(problem)
-    pathView.add("bezierPath", "-b")
-    pathView.add("multiarcPath", "-r")
+    pathView.add("bezierPath", "b")
+    pathView.add("multiarcPath", "r")
+    pathView.add_control_points()
+    pathView.add_arrow()
     pathView.show()
 
     pathView = PathView(problem)

@@ -9,9 +9,10 @@ from Problem import Problem
 
 
 class Bezier:
-    def __init__(self, problem: Problem, nums_arc: int):
+    def __init__(self, problem: Problem, nums_arc: int, k:float):
         self.problem = problem
         self.nums_arc = int
+        self.k = k # k is the distance controller of adding control points
 
     @staticmethod
     def approx_with_arc(nums_arc: int) -> List[Arc]:
@@ -22,6 +23,7 @@ class Bezier:
 
     def add_control_point(self):
         # calculate the direction control points needed for bezier curve
+        k = self.k
         start_x = self.problem.start.x
         start_y = self.problem.start.y
         start_h = self.problem.start.h
@@ -29,8 +31,8 @@ class Bezier:
         end_y = self.problem.goal.y
         end_h = self.problem.goal.h
         dist = self.problem.start.euclidean_dist(self.problem.goal)
-        dir_con = [[start_x, start_y], [start_x + dist * np.cos(start_h), start_y + dist * np.sin(start_h)],
-                   [end_x - dist * np.cos(end_h), end_y - dist * np.sin(end_h)], [end_x, end_y]]
+        dir_con = [[start_x, start_y], [start_x +k* dist * np.cos(start_h), start_y +k* dist * np.sin(start_h)],
+                   [end_x -k* dist * np.cos(end_h), end_y -k* dist * np.sin(end_h)], [end_x, end_y]]
         return np.array(dir_con)
 
     def get_point(self, t, points):
