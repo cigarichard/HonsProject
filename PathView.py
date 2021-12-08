@@ -9,11 +9,13 @@ from Problem import *
 class PathView:
     # Crete a graphical user interface to display the paths.
 
-    def __init__(self, problem: Problem):
+    def __init__(self, problem: Problem, num_approx: int, dist_con: float):
         fig, ax = plt.subplots()
         self.problem = problem
         self.ax = ax
-        self.bezier = Bezier(problem, 1, 1)
+        self.num_approx = num_approx
+        self.bezier = Bezier(problem, 1, dist_con, num_approx)
+        self.dist = self.problem.start.euclidean_dist(self.problem.goal)
 
     def compute_bezier(self):
         # generate the points of bezier curve
@@ -23,7 +25,7 @@ class PathView:
     def compute_multiarcPath(self):
         # generate the arc end configuration of each arc, and append its x and y coordinates into a list
         curve_points = self.compute_bezier()
-        curvature = Curvature(curve_points, 100)
+        curvature = Curvature(curve_points, self.num_approx)
         arc_list = curvature.get_arc()
         multarcpath1 = self.problem.start
         x = [self.problem.start.x]
@@ -36,23 +38,25 @@ class PathView:
 
     def compute_curvature(self, curve_points: List):
         # generate the curvature of the curve with corresponding length of curve
-        curvature = Curvature(curve_points, 100)
+        curvature = Curvature(curve_points, self.num_approx)
         cur_curvature = curvature.cal_curvature()
         cur_split = curvature.split_cur()
         return cur_curvature, cur_split
 
     def generate_start_arrow(self):
+        dist = self.dist
         x = self.problem.start.x
         y = self.problem.start.y
         h = self.problem.start.h
-        arr = ([x + 0.5 * np.cos(h), y + 0.5 * np.sin(h)])
+        arr = ([x + 0.3 * dist * np.cos(h), y + 0.3 * dist * np.sin(h)])
         return np.array(arr)
 
     def generate_end_arrow(self):
+        dist = self.dist
         x = self.problem.goal.x
         y = self.problem.goal.y
         h = self.problem.goal.h
-        arr = ([x + 0.5 * np.cos(h), y + 0.5 * np.sin(h)])
+        arr = ([x + 0.3 * dist * np.cos(h), y + 0.3 * dist * np.sin(h)])
         return np.array(arr)
 
     def add_arrow(self):
@@ -62,7 +66,6 @@ class PathView:
                      arrowprops=dict(arrowstyle="->", color="coral"), label="direction")
         plt.annotate("", xy=(arr_end[0], arr_end[1]), xytext=(self.problem.goal.x, self.problem.goal.y),
                      arrowprops=dict(arrowstyle="->", color="coral"), label="direction")
-        print(arr_end[0],arr_end[1])
 
     def add(self, label: str, color: str):
         # plot the path by different methods used
@@ -79,7 +82,7 @@ class PathView:
 
     def add_control_points(self):
         control_points = self.bezier.add_control_point()
-        plt.plot(control_points[:,0], control_points[:,1], "xb")
+        plt.plot(control_points[:, 0], control_points[:, 1], "xb")
 
     def add_curvature(self, label: str, color: str):
         # plot the curvature of the path

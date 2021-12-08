@@ -9,7 +9,7 @@ class Problem:
     @classmethod
     def create_quarter_circle_problem(cls):
         start = Configuration(0, 0, 0)
-        goal = Configuration(1, 1, 0)
+        goal = Configuration(9, 9, 0)
         return cls(start, goal)
 
     @classmethod
