@@ -8,13 +8,13 @@ class Problem:
 
     @classmethod
     def create_quarter_circle_problem(cls):
-        start = Configuration(0, 0, 0)
-        goal = Configuration(9, 9, 0)
+        start = Configuration(0, 0, 1)
+        goal = Configuration(9, 9, 2)
         return cls(start, goal)
 
     @classmethod
     def load_from_file(cls, path: str):
-        #reading file in one line format
+        # reading file in one line format
         f = open(path, "r")
         list1 = [float(i) for i in f.readline().split(',')]
         start = Configuration(list1[0], list1[1], list1[2])

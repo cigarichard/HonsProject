@@ -39,7 +39,7 @@ class Curvature:
         # split a curve into k pieces and use split against curvature
         k = self.num_approx
         curve_len = self.curve_len()
-        split = np.linspace(0, curve_len, num=(k + 1))
+        split = np.linspace(0, curve_len, num=(k+1))
         return split
 
     def arc_len(self):
