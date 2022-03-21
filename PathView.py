@@ -21,18 +21,22 @@ class PathView:
         self.cubicspline = CubicSpline2D(problem, dist_con)
         self.dist = self.problem.start.euclidean_dist(self.problem.goal)
 
-    def compute_multiarcPath(self):
+    def compute_multiarcPath(self, k):
         # generate the arc end configuration of each arc, and append its x and y coordinates into a list
-        curve_points = self.bezier.compute_curve()
+        bezier = Bezier(self.problem, k, self.num_approx)
+        curve_points = bezier.compute_curve()
         curvature = Curvature(curve_points, self.num_approx)
         arc_list = curvature.get_arc()
         multarcpath1 = self.problem.start
+        strain = 0
         x = [self.problem.start.x]
         y = [self.problem.start.y]
         for i in range(len(arc_list)):
             multarcpath1 = compute_arc_end_cfg(multarcpath1, arc_list[i])
+            strain += arc_list[i].strain()
             x.append(multarcpath1.x)
             y.append(multarcpath1.y)
+        print("strain = ", strain)
         return x, y
 
     def compute_curvature(self, curve_points: List):
@@ -55,26 +59,28 @@ class PathView:
         x = self.problem.goal.x
         y = self.problem.goal.y
         h = self.problem.goal.h
-        arr = ([x + 0.3 * dist * np.cos(h), y + 0.3 * dist * np.sin(h)])
+        arr = ([x - 0.3 * dist * np.cos(h), y - 0.3 * dist * np.sin(h)])
         return np.array(arr)
 
     def add_arrow(self):
         arr_start = self.generate_start_arrow()
         arr_end = self.generate_end_arrow()
         plt.annotate("", xy=(arr_start[0], arr_start[1]), xytext=(self.problem.start.x, self.problem.start.y),
-                     arrowprops=dict(arrowstyle="->", color="coral"), label="direction")
-        plt.annotate("", xy=(arr_end[0], arr_end[1]), xytext=(self.problem.goal.x, self.problem.goal.y),
-                     arrowprops=dict(arrowstyle="->", color="coral"), label="direction")
+                     arrowprops=dict(arrowstyle="->", color="gold"), label="direction")
+        plt.annotate("", xy=(self.problem.goal.x, self.problem.goal.y), xytext=(arr_end[0], arr_end[1]),
+                     arrowprops=dict(arrowstyle="->", color="gold"), label="direction")
 
-    def add(self, label: str, color: str):
+    def add(self, label: str, color: str, k: float):
         # plot the path by different methods used
-        # It takes two arguments, label: the name of the path, color: the color of the path on the graph
-        if label == "bezierPath":
-            curve_points = self.bezier.compute_curve()
+        # It takes three arguments, label: the name of the path, color: the color of the path on the graph
+        # k: control the distance of different control point to generated different path
+
+        if label == "bezier":
+            bezier = Bezier(self.problem, k, self.num_approx)
+            curve_points = bezier.compute_curve()
+            control_points = bezier.add_control_point()
             x = curve_points[:, 0]
             y = curve_points[:, 1]
-        if label == "multiarcPath":
-            x, y = self.compute_multiarcPath()
         if label == "bspline":
             bspline = self.bspline.compute_curve()
             x = bspline[:, 0]
@@ -83,31 +89,35 @@ class PathView:
             cubicspline = self.cubicspline.compute_curve()
             x = cubicspline[:, 0]
             y = cubicspline[:, 1]
-        self.ax.plot(x, y, color, label=label)
+        self.ax.plot(x, y, color, label=label + "@" + str(k))
+        self.ax.plot(control_points[1:-1][:, 0], control_points[1:-1][:, 1], "x" + color)
+        self.ax.plot(self.problem.start.x, self.problem.start.y, "xk")
+        self.ax.plot(self.problem.goal.x, self.problem.goal.y, "xk")
         plt.xlabel("x")
         plt.ylabel("y")
 
-    def add_control_points(self):
-        control_points = self.bezier.add_control_point()
-        plt.plot(control_points[:, 0], control_points[:, 1], "xb")
-
-    def add_curvature(self, label: str, color: str):
+    def add_curvature(self, label: str, color: str, k: float):
         # plot the curvature of the path
-        if label == "bezierPath":
-            bezierPoints = self.bezier.compute_curve()
+        if label == "bezier":
+            bezier = Bezier(self.problem, k, self.num_approx)
+            bezierPoints = bezier.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(bezierPoints)
-            print(len(cur_split), len(cur_curvature))
+            # print(len(cur_split), len(cur_curvature))
         if label == "bspline":
             bsplinePoints = self.bspline.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(bsplinePoints)
-            print(len(cur_split), len(cur_curvature))
+            # print(len(cur_split), len(cur_curvature))
         if label == "cubicspline":
             cubicspline = self.cubicspline.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(cubicspline)
-            print(len(cur_split), len(cur_curvature))
-        self.ax.plot(cur_split, cur_curvature[:], color, label=label)
-        plt.xlabel("line length[m]")
+            # print(len(cur_split), len(cur_curvature))
+        self.ax.plot(cur_split, cur_curvature[:], color, label=label + "@" + str(k))
+        plt.xlabel("path length[m]")
         plt.ylabel("curvature [1/m]")
+
+    def add_multiarc(self, label, color, k):
+        x, y = self.compute_multiarcPath(k)
+        self.ax.plot(x, y, color, label=label + "@" + str(k))
 
     def show(self):
         plt.grid(True)

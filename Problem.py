@@ -1,3 +1,5 @@
+import numpy as np
+
 from Configuration import Configuration
 
 
