@@ -17,27 +17,33 @@ class PathView:
         self.ax = ax
         self.num_approx = num_approx
         self.bezier = Bezier(problem, dist_con, num_approx)
-        self.bspline = B_spline(problem, 3, 3, dist_con)
+        self.bspline = B_spline(problem, dist_con)
         self.cubicspline = CubicSpline2D(problem, dist_con)
         self.dist = self.problem.start.euclidean_dist(self.problem.goal)
 
-    def compute_multiarcPath(self, k):
+    def add_multiarc(self, label, color, k):
         # generate the arc end configuration of each arc, and append its x and y coordinates into a list
-        bezier = Bezier(self.problem, k, self.num_approx)
-        curve_points = bezier.compute_curve()
+        if label == "bezier":
+            bezier = Bezier(self.problem, k, self.num_approx)
+            curve_points = bezier.compute_curve()
+        if label == "bspline":
+            bspline = B_spline(self.problem, k)
+            curve_points = bspline.compute_curve()
+        if label == "cubicspline":
+            curve_points = self.cubicspline.compute_curve()
         curvature = Curvature(curve_points, self.num_approx)
         arc_list = curvature.get_arc()
-        multarcpath1 = self.problem.start
+        multarcpath = self.problem.start
         strain = 0
         x = [self.problem.start.x]
         y = [self.problem.start.y]
         for i in range(len(arc_list)):
-            multarcpath1 = compute_arc_end_cfg(multarcpath1, arc_list[i])
+            multarcpath = compute_arc_end_cfg(multarcpath, arc_list[i])
             strain += arc_list[i].strain()
-            x.append(multarcpath1.x)
-            y.append(multarcpath1.y)
+            x.append(multarcpath.x)
+            y.append(multarcpath.y)
         print("strain = ", strain)
-        return x, y
+        self.ax.plot(x, y, color, label="multiarc" + label + "@" + str(k))
 
     def compute_curvature(self, curve_points: List):
         # generate the curvature of the curve with corresponding length of curve
@@ -82,7 +88,8 @@ class PathView:
             x = curve_points[:, 0]
             y = curve_points[:, 1]
         if label == "bspline":
-            bspline = self.bspline.compute_curve()
+            bspline = B_spline(self.problem, k)
+            bspline = bspline.compute_curve()
             x = bspline[:, 0]
             y = bspline[:, 1]
         if label == "cubicspline":
@@ -104,7 +111,8 @@ class PathView:
             cur_split, cur_curvature = self.compute_curvature(bezierPoints)
             # print(len(cur_split), len(cur_curvature))
         if label == "bspline":
-            bsplinePoints = self.bspline.compute_curve()
+            bspline = B_spline(self.problem, k)
+            bsplinePoints = bspline.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(bsplinePoints)
             # print(len(cur_split), len(cur_curvature))
         if label == "cubicspline":
@@ -114,10 +122,6 @@ class PathView:
         self.ax.plot(cur_split, cur_curvature[:], color, label=label + "@" + str(k))
         plt.xlabel("path length[m]")
         plt.ylabel("curvature [1/m]")
-
-    def add_multiarc(self, label, color, k):
-        x, y = self.compute_multiarcPath(k)
-        self.ax.plot(x, y, color, label=label + "@" + str(k))
 
     def show(self):
         plt.grid(True)

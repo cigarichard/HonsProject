@@ -5,10 +5,10 @@ from Problem import Problem
 
 class B_spline:
 
-    def __init__(self, problem: Problem, n: int, k: int, d: int):
+    def __init__(self, problem: Problem, d: int):
         self.problem = problem
-        self.n = n  # number of vertex - 1
-        self.k = k  # power of the B-spline
+        self.n = 3  # number of vertex - 1
+        self.k = 3  # power of the B-spline
         self.d = d  # ratio of distance for the vertex
         self.knotVector = [0, 0, 0, 0, 1, 1, 1, 1]
         self.dist = self.problem.start.euclidean_dist(self.problem.goal)

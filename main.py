@@ -32,7 +32,7 @@ def main():
 
     pathView = PathView(problem, nums_appr, dist_con)
     pathView.add("bezier", "b", 0.2)
-    pathView.add_multiarc("multiarc", "r", 0.2)
+    pathView.add_multiarc("bezier", "r", 0.2)
     pathView.add_arrow()
     pathView.show()
 
