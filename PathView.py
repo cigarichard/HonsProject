@@ -11,14 +11,11 @@ from CubicSpline import *
 class PathView:
     # Crete a graphical user interface to display the paths.
 
-    def __init__(self, problem: Problem, num_approx: int, dist_con: float):
+    def __init__(self, problem: Problem, num_approx: int):
         fig, ax = plt.subplots()
         self.problem = problem
         self.ax = ax
         self.num_approx = num_approx
-        self.bezier = Bezier(problem, dist_con, num_approx)
-        self.bspline = B_spline(problem, dist_con)
-        self.cubicspline = CubicSpline2D(problem, dist_con)
         self.dist = self.problem.start.euclidean_dist(self.problem.goal)
 
     def add_multiarc(self, label, color, k):
@@ -30,7 +27,8 @@ class PathView:
             bspline = B_spline(self.problem, k)
             curve_points = bspline.compute_curve()
         if label == "cubicspline":
-            curve_points = self.cubicspline.compute_curve()
+            cubicspline = CubicSpline2D(self.problem, k)
+            curve_points = cubicspline.compute_curve()
         curvature = Curvature(curve_points, self.num_approx)
         arc_list = curvature.get_arc()
         multarcpath = self.problem.start

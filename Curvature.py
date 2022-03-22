@@ -25,7 +25,8 @@ class Curvature:
         dy_dt = np.gradient(self.curve_point[:, 1])
         d2x_dt2 = np.gradient(dx_dt)
         d2y_dt2 = np.gradient(dy_dt)
-        curvature = (d2y_dt2 * dy_dt - d2x_dt2 * dy_dt) / (dx_dt * dx_dt + dy_dt * dy_dt) ** 1.5
+        curvature = (d2y_dt2 * dx_dt - d2x_dt2 * dy_dt) / (dx_dt * dx_dt + dy_dt * dy_dt) ** 1.5
+        # print("length of curvature", len(curvature))
         return curvature
 
     def curve_len(self):
@@ -33,34 +34,37 @@ class Curvature:
         curve_len = 0
         for i in range(len(self.curve_point) - 1):
             curve_len += euclidean_dist(self.curve_point[i], self.curve_point[i + 1])
+        # print("curve length", curve_len)
         return curve_len
 
     def split_cur(self):
         # split a curve into k pieces and use split against curvature
         k = self.num_approx
         curve_len = self.curve_len()
-        split = np.linspace(0, curve_len, num=(k+1))
+        split = np.linspace(0, curve_len, num=(k + 1))
         return split
 
     def arc_len(self):
         """
         :return: split a curve path into n arcs
         """
-        curve_point = self.curve_point
         arc_len = []
-        for i in range(len(curve_point) - 1):
-            arc_len.append(euclidean_dist(curve_point[i], curve_point[i + 1]))
-
+        sum = 0
+        for i in range(len(self.curve_point) - 1):
+            arc_len.append(euclidean_dist(self.curve_point[i], self.curve_point[i + 1]))
+            sum += euclidean_dist(self.curve_point[i], self.curve_point[i + 1])
+        # print("total of arc length ", sum)
+        # print("numbers of arc", len(arc_len))
         return np.array(arc_len)
 
     def get_curvature_mean(self):
         # by taking numbers of arc, calculate the curvature of each arc
         curvature = self.cal_curvature()
-        k = self.num_approx
-        l = len(curvature) // self.num_approx
+        # print(curvature)
         curvature_mean = []
-        for i in range(k):
-            curvature_mean.append((np.sum(curvature[(i * l): (i + 2) * l])) / (l + 1))
+        for i in range(len(curvature)-1):
+            curvature_mean.append((np.sum(curvature[i: (i + 2)])) / 2 )
+        # print("numbers of curvature mean", len(curvature_mean))
         return np.array(curvature_mean)
 
     def get_arc(self) -> List[Arc]:

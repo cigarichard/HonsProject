@@ -7,22 +7,6 @@ from Problem import Problem
 
 
 def compute_arc_end_cfg(arc_start_cfg: Configuration, arc: Arc) -> Configuration:
-    # k = 0.1
-    # split_arc = arc.arc_length / 10
-    # prop = np.arange(0, 1, k)
-    # x = arc_start_cfg.x
-    # y = arc_start_cfg.y
-    # for i in range(10):
-    #     h = arc_start_cfg.h +  prop[i] * arc.phi
-    #
-    #     if np.cos(h) == 1 or np.sin(h) == 1:
-    #         y += 0
-    #         x += 0
-    #     else:
-    #         x += split_arc * np.cos(h)
-    #         y += split_arc * np.sin(h)
-    # return Configuration(x,y,h)
-
     x = arc_start_cfg.x
     y = arc_start_cfg.y
     h = arc_start_cfg.h
@@ -38,7 +22,6 @@ def compute_arc_end_cfg(arc_start_cfg: Configuration, arc: Arc) -> Configuration
     # The changes in x and y along the axes of the robot's local coordinate system.
     dx = arc.radius * np.sin(arc.phi)
     dy = arc.radius * (1 - np.cos(arc.phi))
-
     # Rotate the relative positions anti-clockwise by the angle of the robot's heading.
     # This gives an absolute rather than a relative displacement in X-Y.
     # By adding the current X and Y positions we get the new absolute position.
