@@ -1,6 +1,4 @@
 import numpy as np
-import Configuration
-
 
 class Arc:
 
