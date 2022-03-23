@@ -24,7 +24,7 @@ class PathView:
             bezier = Bezier(self.problem, k, self.num_approx)
             curve_points = bezier.compute_curve()
         if label == "bspline":
-            bspline = B_spline(self.problem, k)
+            bspline = B_spline(self.problem, k, self.num_approx)
             curve_points = bspline.compute_curve()
         if label == "cubicspline":
             cubicspline = CubicSpline2D(self.problem, k)
@@ -85,17 +85,19 @@ class PathView:
             control_points = bezier.add_control_point()
             x = curve_points[:, 0]
             y = curve_points[:, 1]
+            self.ax.plot(control_points[1:-1][:, 0], control_points[1:-1][:, 1], "x" + color)
         if label == "bspline":
-            bspline = B_spline(self.problem, k)
-            bspline = bspline.compute_curve()
-            x = bspline[:, 0]
-            y = bspline[:, 1]
+            bspline = B_spline(self.problem, k, self.num_approx)
+            curve_points = bspline.compute_curve()
+            rx, ry = bspline.add_control_point()
+            x = curve_points[:, 0]
+            y = curve_points[:, 1]
+            self.ax.plot(rx[1:-1], ry[1:-1], "x" + color)
         if label == "cubicspline":
             cubicspline = self.cubicspline.compute_curve()
             x = cubicspline[:, 0]
             y = cubicspline[:, 1]
         self.ax.plot(x, y, color, label=label + "@" + str(k))
-        self.ax.plot(control_points[1:-1][:, 0], control_points[1:-1][:, 1], "x" + color)
         self.ax.plot(self.problem.start.x, self.problem.start.y, "xk")
         self.ax.plot(self.problem.goal.x, self.problem.goal.y, "xk")
         plt.xlabel("x")
@@ -109,7 +111,7 @@ class PathView:
             cur_split, cur_curvature = self.compute_curvature(bezierPoints)
             # print(len(cur_split), len(cur_curvature))
         if label == "bspline":
-            bspline = B_spline(self.problem, k)
+            bspline = B_spline(self.problem, k, self.num_approx)
             bsplinePoints = bspline.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(bsplinePoints)
             # print(len(cur_split), len(cur_curvature))

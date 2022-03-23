@@ -5,11 +5,12 @@ from Problem import Problem
 
 class B_spline:
 
-    def __init__(self, problem: Problem, d: int):
+    def __init__(self, problem: Problem, d: int, nums_approx: int):
         self.problem = problem
         self.n = 3  # number of vertex - 1
         self.k = 3  # power of the B-spline
         self.d = d  # ratio of distance for the vertex
+        self.nums_approx = nums_approx
         self.knotVector = [0, 0, 0, 0, 1, 1, 1, 1]
         self.dist = self.problem.start.euclidean_dist(self.problem.goal)
 
@@ -57,12 +58,13 @@ class B_spline:
     def compute_curve(self):
         n = self.n
         k = self.k
+        nums_approx = self.nums_approx + 1
         knotVector = self.knotVector
         x, y = self.add_control_point()
-        basis_i = np.zeros((101,2))  # store the value of the basis function
-        r = np.zeros((101,2))
+        basis_i = np.zeros((nums_approx,2))  # store the value of the basis function
+        r = np.zeros((nums_approx,2))
         for i in range(n + 1):  # calculate the value of ith basis function of B-spline
-            T = np.linspace(knotVector[k], knotVector[n + 1], 101)  # take t=0.01 between each knotVector
+            T = np.linspace(knotVector[k], knotVector[n + 1], nums_approx)  # take t=0.01 between each knotVector
             j = 0
             for t in T:
                 knotVector = np.array(knotVector)
