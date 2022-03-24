@@ -25,7 +25,7 @@ def main():
     pathView.add("cubicspline", "g", 0.6)
     pathView.add("cubicspline", "c", 0.4)
     pathView.add("cubicspline", "m", 0.2)
-    # pathView.add_arrow()
+    pathView.add_arrow()
     pathView.show()
 
     # pathView = PathView(problem, nums_appr)
@@ -45,7 +45,7 @@ def main():
     # pathView.add_curvature("bspline", "g", 0.6)
     # pathView.add_curvature("bspline", "c", 0.4)
     # pathView.add_curvature("bspline", "m", 0.2)
-    pathView.add_curvature("cubicspline", "y", 1)
+    pathView.add_curvature("cubicspline", "b", 1)
     pathView.add_curvature("cubicspline", "y", 0.8)
     pathView.add_curvature("cubicspline", "g", 0.6)
     pathView.add_curvature("cubicspline", "c", 0.4)
