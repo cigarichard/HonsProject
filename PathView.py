@@ -94,9 +94,13 @@ class PathView:
             y = curve_points[:, 1]
             self.ax.plot(rx[1:-1], ry[1:-1], "x" + color)
         if label == "cubicspline":
-            cubicspline = self.cubicspline.compute_curve()
-            x = cubicspline[:, 0]
-            y = cubicspline[:, 1]
+            cubicspline = CubicSpline2D(self.problem, k)
+            curve_points = cubicspline.compute_curve()
+            # print(str(k), " :", len(curve_points))
+            rx, ry = cubicspline.add_control_point()
+            x = curve_points[:, 0]
+            y = curve_points[:, 1]
+            self.ax.plot(rx[1:-1], ry[1:-1], "x" + color)
         self.ax.plot(x, y, color, label=label + "@" + str(k))
         self.ax.plot(self.problem.start.x, self.problem.start.y, "xk")
         self.ax.plot(self.problem.goal.x, self.problem.goal.y, "xk")
@@ -116,9 +120,10 @@ class PathView:
             cur_split, cur_curvature = self.compute_curvature(bsplinePoints)
             # print(len(cur_split), len(cur_curvature))
         if label == "cubicspline":
-            cubicspline = self.cubicspline.compute_curve()
-            cur_split, cur_curvature = self.compute_curvature(cubicspline)
-            # print(len(cur_split), len(cur_curvature))
+            cubicspline = CubicSpline2D(self.problem, k)
+            curve_points = cubicspline.compute_curve()
+            cur_split, cur_curvature = self.compute_curvature(curve_points)
+            print(k,len(curve_points),len(cur_split), len(cur_curvature))
         self.ax.plot(cur_split, cur_curvature[:], color, label=label + "@" + str(k))
         plt.xlabel("path length[m]")
         plt.ylabel("curvature [1/m]")
