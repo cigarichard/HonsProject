@@ -10,11 +10,12 @@ class CubicSpline2D:
     2D Cubic Spline class
     """
 
-    def __init__(self, problem: Problem, d: int):
+    def __init__(self, problem: Problem, d: int, nums_approx: int):
         self.problem = problem
         self.start = self.problem.start
         self.goal = self.problem.goal
         self.d = d  # # ratio of distance for the vertex to compute the control points
+        self.nums_approx = nums_approx
         self.dist = self.problem.start.euclidean_dist(self.problem.goal)
         self.x, self.y = self.add_control_point()
         self.s = self.__calc_s(self.x, self.y)
@@ -24,50 +25,24 @@ class CubicSpline2D:
     def add_control_point(self):
         # calculate the direction control points needed for B-spline
         k = 0.9 * self.d
-        start_x, start_y, start_h = self.start.x, self.start.y, self.start.h
-        end_x, end_y, end_h = self.goal.x, self.goal.y, self.goal.h
-        x, y, rx, ry = [], [], [], []
-        x.append(start_x)
-        y.append(start_y)
-        rx.append(end_x)
-        ry.append(end_y)
-        start_1 = Configuration(start_x + 0.2 * k * self.dist * np.cos(start_h),
-                                start_y + 0.2 * k * self.dist * np.sin(start_h), start_h)
-        end_1 = Configuration(end_x - 0.2 * k * self.dist * np.cos(end_h), end_y - 0.2 * k * self.dist * np.sin(end_h),
-                              end_h)
-        theta = np.abs(start_h - end_h)
-        start_r, end_r = start_1, end_1
-        theta = np.abs(start_1.h - end_1.h)
-        x.append(start_1.x)
-        y.append(start_1.y)
-        rx.append(end_1.x)
-        ry.append(end_1.y)
-        a = 0
-        while a<2:
-            start_r, end_r = self.conr_renew(start_r, end_r, self.dist, k, theta)
-            x.append(start_r.x)
-            y.append(start_r.y)
-            rx.append(end_r.x)
-            ry.append(end_r.y)
-            a += 1
+        start_1 = Configuration(self.start.x + 0.2 * k * self.dist * np.cos(self.start.h),
+                                self.start.y + 0.2 * k * self.dist * np.sin(self.start.h),
+                                self.start.h)
+        end_1 = Configuration(self.goal.x - 0.2 * k * self.dist * np.cos(self.goal.h),
+                              self.goal.y - 0.2 * k * self.dist * np.sin(self.goal.h),
+                              self.goal.h)
+        theta = (start_1.h - end_1.h)
 
-        rx.reverse()
-        ry.reverse()
-        for i in range(len(rx)):
-            x.append(rx[i])
-            y.append(ry[i])
-
+        start_2 = Configuration(start_1.x + 0.4 * k * self.dist * np.cos(start_1.h + (0.5 * theta)),
+                                start_1.y + 0.4 * k * self.dist * np.sin(start_1.h + (0.5 * theta)),
+                                start_1.h - 0.5* theta)
+        end_2 = Configuration(end_1.x - 0.4 * k * self.dist * np.cos(end_1.h + (0.5 * theta)),
+                              end_1.y - 0.4 * k * self.dist * np.sin(end_1.h + (0.5 * theta)),
+                              end_1.h + 0.5 * theta)
+        x = [self.start.x, start_1.x, start_2.x, end_2.x, end_1.x, self.goal.x]
+        y = [self.start.y, start_1.y, start_2.y, end_2.y, end_1.y, self.goal.y]
         return x, y
 
-    def conr_renew(self, start:Configuration, end:Configuration, dist, k, theta):
-
-        start_2 = Configuration(start.x + 0.2 * k * self.dist * np.cos(start.h - (0.4 * theta)),
-                                start.y + 0.2 * k * self.dist * np.sin(start.h - (0.4 * theta)),
-                                start.h - 0.4 * theta)
-        end_2 = Configuration(end.x - 0.2 * k * self.dist * np.cos(end.h - (0.4 * theta)),
-                              end.y - 0.2 * k * self.dist * np.sin(end.h - (0.4 * theta)),
-                              end.h - 0.4 * theta)
-        return start_2, end_2
 
     def __calc_s(self, x, y):
         dx = np.diff(x)
@@ -83,7 +58,7 @@ class CubicSpline2D:
         return x, y
 
     def compute_curve(self):
-        ds = self.s[-1] / 101  # distance of each interpolated points
+        ds = self.s[-1] / (self.nums_approx+1)  # distance of each interpolated points
         # and there will be 100 points generated to construct the curve
         s = np.arange(0, self.s[-1], ds)
         point = []

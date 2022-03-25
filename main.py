@@ -28,11 +28,13 @@ def main():
     pathView.add_arrow()
     pathView.show()
 
-    # pathView = PathView(problem, nums_appr)
+    pathView = PathView(problem, nums_appr)
     # pathView.add("bezier", "b", 0.4)
     # pathView.add_multiarc("bezier", "r", 0.4)
-    # pathView.add_arrow()
-    # pathView.show()
+    pathView.add("cubicspline", "y", 0.4)
+    pathView.add_multiarc("cubicspline", "g", 0.4)
+    pathView.add_arrow()
+    pathView.show()
 
     pathView = PathView(problem, nums_appr)
     # pathView.add_curvature("bezier", "-b", 1)

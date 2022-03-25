@@ -27,7 +27,7 @@ class PathView:
             bspline = B_spline(self.problem, k, self.num_approx)
             curve_points = bspline.compute_curve()
         if label == "cubicspline":
-            cubicspline = CubicSpline2D(self.problem, k)
+            cubicspline = CubicSpline2D(self.problem, k, self.num_approx)
             curve_points = cubicspline.compute_curve()
         curvature = Curvature(curve_points, self.num_approx)
         arc_list = curvature.get_arc()
@@ -94,7 +94,7 @@ class PathView:
             y = curve_points[:, 1]
             self.ax.plot(rx[1:-1], ry[1:-1], "x" + color)
         if label == "cubicspline":
-            cubicspline = CubicSpline2D(self.problem, k)
+            cubicspline = CubicSpline2D(self.problem, k, self.num_approx)
             curve_points = cubicspline.compute_curve()
             # print(str(k), " :", len(curve_points))
             rx, ry = cubicspline.add_control_point()
@@ -120,7 +120,7 @@ class PathView:
             cur_split, cur_curvature = self.compute_curvature(bsplinePoints)
             # print(len(cur_split), len(cur_curvature))
         if label == "cubicspline":
-            cubicspline = CubicSpline2D(self.problem, k)
+            cubicspline = CubicSpline2D(self.problem, k, self.num_approx)
             curve_points = cubicspline.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(curve_points)
             print(k,len(curve_points),len(cur_split), len(cur_curvature))
