@@ -24,25 +24,51 @@ class CubicSpline2D:
 
     def add_control_point(self):
         # calculate the direction control points needed for B-spline
-        k = 0.9 * self.d
-        start_1 = Configuration(self.start.x + 0.2 * k * self.dist * np.cos(self.start.h),
-                                self.start.y + 0.2 * k * self.dist * np.sin(self.start.h),
+        k = 0.99 * self.d
+        ks = 0.4
+        start_1 = Configuration(self.start.x + ks * k * self.dist * np.cos(self.start.h),
+                                self.start.y + ks * k * self.dist * np.sin(self.start.h),
                                 self.start.h)
-        end_1 = Configuration(self.goal.x - 0.2 * k * self.dist * np.cos(self.goal.h),
-                              self.goal.y - 0.2 * k * self.dist * np.sin(self.goal.h),
+        end_1 = Configuration(self.goal.x - ks * k * self.dist * np.cos(self.goal.h),
+                              self.goal.y - ks * k * self.dist * np.sin(self.goal.h),
                               self.goal.h)
+
         theta = (start_1.h - end_1.h)
+        if theta != 0:
+            start_2 = Configuration(start_1.x + ks * k * self.dist * np.cos(start_1.h + (0.5 * theta)),
+                                    start_1.y + ks * k * self.dist * np.sin(start_1.h + (0.5 * theta)),
+                                    start_1.h - 0.5 * theta)
+            end_2 = Configuration(end_1.x - ks * k * self.dist * np.cos(end_1.h + (0.5 * theta)),
+                                  end_1.y - ks * k * self.dist * np.sin(end_1.h + (0.5 * theta)),
+                                  end_1.h + 0.5 * theta)
+            x = [self.start.x, start_1.x, start_2.x, end_2.x, end_1.x, self.goal.x]
+            y = [self.start.y, start_1.y, start_2.y, end_2.y, end_1.y, self.goal.y]
+        else:
+            theta = self.start.h
+            start_2 = Configuration(start_1.x + ks * k * self.dist * np.cos(start_1.h - (0.5 * theta)),
+                                    start_1.y + ks * k * self.dist * np.sin(start_1.h - (0.5 * theta)),
+                                    start_1.h + 0.5 * theta)
+            end_2 = Configuration(end_1.x - ks * k * self.dist * np.cos(end_1.h - (0.5 * theta)),
+                                  end_1.y - ks * k * self.dist * np.sin(end_1.h - (0.5 * theta)),
+                                  end_1.h - 0.5 * theta)
+            mid = Configuration(self.goal.x / 2, self.goal.y / 2, self.goal.h / 2)
+            x = [self.start.x, start_1.x, start_2.x, mid.x, end_2.x, end_1.x, self.goal.x]
+            y = [self.start.y, start_1.y, start_2.y, mid.y, end_2.y, end_1.y, self.goal.y]
 
-        start_2 = Configuration(start_1.x + 0.4 * k * self.dist * np.cos(start_1.h + (0.5 * theta)),
-                                start_1.y + 0.4 * k * self.dist * np.sin(start_1.h + (0.5 * theta)),
-                                start_1.h - 0.5* theta)
-        end_2 = Configuration(end_1.x - 0.4 * k * self.dist * np.cos(end_1.h + (0.5 * theta)),
-                              end_1.y - 0.4 * k * self.dist * np.sin(end_1.h + (0.5 * theta)),
-                              end_1.h + 0.5 * theta)
-        x = [self.start.x, start_1.x, start_2.x, end_2.x, end_1.x, self.goal.x]
-        y = [self.start.y, start_1.y, start_2.y, end_2.y, end_1.y, self.goal.y]
+            # mid = Configuration(self.goal.x/2, self.goal.y/2, self.goal.h/2)
+            # x = [self.start.x, start_1.x,mid.x, end_1.x, self.goal.x]
+            # y = [self.start.y, start_1.y,mid.y, end_1.y, self.goal.y]
+
+        # start_2 = Configuration(start_1.x + ks * k * self.dist * np.cos(start_1.h + (0.5 * theta)),
+        #                         start_1.y + ks * k * self.dist * np.sin(start_1.h + (0.5 * theta)),
+        #                         start_1.h - 0.5 * theta)
+        # end_2 = Configuration(end_1.x - ks * k * self.dist * np.cos(end_1.h + (0.5 * theta)),
+        #                       end_1.y - ks * k * self.dist * np.sin(end_1.h + (0.5 * theta)),
+        #                       end_1.h + 0.5 * theta)
+        # x = [self.start.x, start_1.x, start_2.x, end_2.x, end_1.x, self.goal.x]
+        # y = [self.start.y, start_1.y, start_2.y, end_2.y, end_1.y, self.goal.y]
+
         return x, y
-
 
     def __calc_s(self, x, y):
         dx = np.diff(x)
@@ -58,7 +84,7 @@ class CubicSpline2D:
         return x, y
 
     def compute_curve(self):
-        ds = self.s[-1] / (self.nums_approx+1)  # distance of each interpolated points
+        ds = self.s[-1] / (self.nums_approx + 1)  # distance of each interpolated points
         # and there will be 100 points generated to construct the curve
         s = np.arange(0, self.s[-1], ds)
         point = []
