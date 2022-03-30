@@ -10,8 +10,8 @@ class Problem:
 
     @classmethod
     def create_quarter_circle_problem(cls):
-        start = Configuration(0, 0, 0.5*np.pi)
-        goal = Configuration(9, 0, 0.5*np.pi)
+        start = Configuration(0, 0, 0.2*np.pi)
+        goal = Configuration(10, 10, np.pi)
         return cls(start, goal)
 
     @classmethod
