@@ -40,8 +40,10 @@ class PathView:
             strain += arc_list[i].strain()
             x.append(multarcpath.x)
             y.append(multarcpath.y)
-        print("strain = ", strain)
+        # print("strain@",k," = ", strain)
         self.ax.plot(x, y, color, label="multiarc" + label + "@" + str(k))
+        self.ax.plot(self.problem.start.x, self.problem.start.y, "xk")
+        self.ax.plot(self.problem.goal.x, self.problem.goal.y, "xk")
 
     def compute_curvature(self, curve_points: List):
         # generate the curvature of the curve with corresponding length of curve
@@ -102,7 +104,6 @@ class PathView:
             y = curve_points[:, 1]
             self.ax.plot(rx[1:-1], ry[1:-1], "x" + color)
         self.ax.plot(x, y, color, label=label + "@" + str(k))
-        self.ax.plot(self.problem.start.x, self.problem.start.y, "xk")
         self.ax.plot(self.problem.goal.x, self.problem.goal.y, "xk")
         plt.xlabel("x")
         plt.ylabel("y")
@@ -123,7 +124,7 @@ class PathView:
             cubicspline = CubicSpline2D(self.problem, k, self.num_approx)
             curve_points = cubicspline.compute_curve()
             cur_split, cur_curvature = self.compute_curvature(curve_points)
-            print(k,len(curve_points),len(cur_split), len(cur_curvature))
+            # print(k,len(curve_points),len(cur_split), len(cur_curvature))
         self.ax.plot(cur_split, cur_curvature[:], color, label=label + "@" + str(k))
         plt.xlabel("path length[m]")
         plt.ylabel("curvature [1/m]")
@@ -132,3 +133,34 @@ class PathView:
         plt.grid(True)
         plt.legend()
         plt.show()
+
+    def compute_strain(self, label, color):
+        # generate the arc end configuration of each arc, and append its x and y coordinates into a list
+        strain_list = []
+        index = np.arange(0.2, 1, 0.01)
+        # print(index)
+        for k in index:
+            if label == "bezier":
+                bezier = Bezier(self.problem, k, self.num_approx)
+                curve_points = bezier.compute_curve()
+            if label == "bspline":
+                bspline = B_spline(self.problem, k, self.num_approx)
+                curve_points = bspline.compute_curve()
+            if label == "cubicspline":
+                # print(k)
+                cubicspline = CubicSpline2D(self.problem, k, self.num_approx)
+                curve_points = cubicspline.compute_curve()
+            curvature = Curvature(curve_points, self.num_approx)
+            arc_list = curvature.get_arc()
+            multarcpath = self.problem.start
+            strain = 0
+            for i in range(len(arc_list)):
+                multarcpath = compute_arc_end_cfg(multarcpath, arc_list[i])
+                strain += arc_list[i].strain()
+            strain_list.append(strain)
+        strain_min = min(strain_list)
+        strain_min_index = strain_list.index(min(strain_list))
+        print(index[strain_min_index], strain_min)
+        self.ax.plot(index, strain_list, color=color, label=label)
+        plt.xlabel("distance ratio of control points")
+        plt.ylabel("strain energy")

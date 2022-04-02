@@ -69,7 +69,7 @@ class Curvature:
         # add all the arc into a list
         k = len(self.curve_point)-1
         # k = self.num_approx
-        print(k)
+        # print(k)
         arc_len = self.arc_len()
         curvature = self.get_curvature_mean()
         arc_list = []

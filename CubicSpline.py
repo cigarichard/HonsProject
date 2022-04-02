@@ -47,6 +47,9 @@ class CubicSpline:
 
     def calc(self, t): # calculate the coordinates of each point on the curve
         i = bisect.bisect(self.x, t) - 1
+        if i >= len(self.b):
+            i -= 1
+        # print(i, self.x, t)
         dx = t - self.x[i]
         result = self.a[i] + self.b[i] * dx + self.c[i] * dx ** 2.0 + self.d[i] * dx ** 3.0
         return result
