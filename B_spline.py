@@ -23,9 +23,6 @@ class B_spline:
         end_x = self.problem.goal.x
         end_y = self.problem.goal.y
         end_h = self.problem.goal.h
-        # vertex = [[start_x, start_y],
-        #           [start_x + k * self.dist * np.cos(start_h), start_y + k * self.dist * np.sin(start_h)],
-        #           [end_x - k * self.dist * np.cos(end_h), end_y - k * self.dist * np.sin(end_h)], [end_x, end_y]]
         x = [start_x, start_x + k * self.dist * np.cos(start_h), end_x - k * self.dist * np.cos(end_h), end_x]
         y = [start_y, start_y + k * self.dist * np.sin(start_h), end_y - k * self.dist * np.sin(end_h), end_y]
         return x, y

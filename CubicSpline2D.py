@@ -66,18 +66,15 @@ class CubicSpline2D:
         # print("s:", s)
         return s
 
-    def calc_position(self, s):  # to calculate the coordinate of each point on the curve
-        x = self.sx.calc(s)
-        y = self.sy.calc(s)
-        return x, y
 
-    def compute_curve(self):
+    def compute_curve(self): # to calculate the coordinate of each point on the curve
         ds = self.s[-1] / (self.nums_approx+1)  # distance of each interpolated points
         # and there will be 101 points generated to construct the curve
         s = np.arange(0, self.s[-1], ds)
         point = []
         for i_s in s:
             # print(i_s)
-            ix, iy = self.calc_position(i_s)
+            ix = self.sx.calc(i_s)
+            iy = self.sy.calc(i_s)
             point.append([ix, iy])
         return np.array(point)
